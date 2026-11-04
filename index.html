@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>塔羅牌計數器 - 10格自訂版</title>
+    <title>塔羅牌計數器 - 0~3循環版</title>
     <style>
         * {
             box-sizing: border-box;
@@ -45,9 +45,10 @@
             background-color: var(--bg-color);
             color: #f1f1f3;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            padding: 20px 4px;
+            padding:15px 5px;
             display: flex;
-            align-items: stretch;
+            justify-content: center;
+            align-items: flex-start; /* 貼頂對齊，消除下方空隙 */
             min-height: 100vh;
             transition: background-color 0.3s ease;
         }
@@ -71,7 +72,7 @@
         }
 
         .home-title {
-            font-size: 26px;
+            font-size: 50px;
             font-weight: bold;
             color: #ffffff;
             text-shadow: 0 2px 8px rgba(0,0,0,0.5);
@@ -108,7 +109,7 @@
             gap: 4px;
         }
 
-        /* 5列網格排版 (預設5x2自動排滿10格) */
+        /* 網格排版 */
         .cards-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -120,18 +121,18 @@
             background: var(--card-bg);
             border: 2px solid #3f3f46;
             border-radius: 10px;
-            padding: 18px;
+            padding: 4px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: space-between;
-            gap: 3px;
+            gap: 2px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
         }
 
         /* 卡片標題與自訂輸入框 */
         .title-box {
-            font-size: 40px;
+            font-size: 38px;
             font-weight: bold;
             color: var(--text-color);
             text-align: center;
@@ -144,7 +145,7 @@
             border: none;
             border-bottom: 1px dashed var(--border-color);
             color: var(--text-color);
-            font-size: 30px;
+            font-size: 38px;
             font-weight: bold;
             text-align: center;
             outline: none;
@@ -154,13 +155,13 @@
         /* 巨型數字按鈕 */
         .num-btn {
             width: 100%;
-            height: 60px;
+            height: 64px;
             border: 2px solid var(--border-color);
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 42px;
+            font-size: 45px;
             font-weight: 900;
             color: var(--text-color);
             background: var(--btn-bg);
@@ -234,7 +235,7 @@
 
         <!-- 1. 首頁風格選擇 -->
         <div id="home-view">
-            <div class="home-title">請選擇風格主題</div>
+            <div class="home-title">請選擇牌組</div>
             <div class="style-btn-group">
                 <button class="style-btn" onclick="selectTheme('p3')">P3 藍</button>
                 <button class="style-btn" onclick="selectTheme('p4')">P4 黃</button>
@@ -245,18 +246,18 @@
         <!-- 2. 計數器主畫面 -->
         <div id="app-view">
             <div class="cards-grid" id="cards-container">
-                <!-- 卡片會由 JavaScript 動態生成 -->
+                <!-- 卡片由 JS 動態生成 -->
             </div>
 
             <!-- 底部控制按鈕區 -->
             <div class="footer-area">
                 <div class="action-btn" onclick="goHome()">
                     <div class="action-title">返回首頁</div>
-                    <div class="action-desc">(重新選擇使用牌組)</div>
+                    <div class="action-desc">(重新選擇)</div>
                 </div>
                 <div class="action-btn" onclick="resetAllCounts()">
                     <div class="action-title">重置按鈕</div>
-                    <div class="action-desc">(數字全部重製)</div>
+                    <div class="action-desc">(數字回到0)</div>
                 </div>
             </div>
         </div>
@@ -266,8 +267,8 @@
     <script>
         // 設定各風格對應的塔羅牌組
         var themeData = {
-            p3: ["愚者", "愛情", "女帝", "永劫", "女教皇", "正義", "隱者", "死神", "命運", "自由格"],
-            p4: ["自由格", "自由格", "自由格", "自由格", "自由格", "自由格", "自由格", "自由格", "自由格", "自由格"],
+            p3: ["愚者", "魔術師", "女教皇", "女帝", "皇帝", "教皇"],
+            p4: ["愚者", "魔術師", "正義", "女帝", "信念", "愛情", "死神", "星"],
             p5: ["愚者", "魔術師", "正義", "女帝", "信念", "愛情", "死神", "星", "隱者", "自由格"]
         };
 
@@ -278,8 +279,8 @@
             currentTheme = theme;
             document.body.className = 'theme-' + theme;
 
-            // 初始化數字陣列為 1
-            counts = new Array(themeData[theme].length).fill(1);
+            // 💡 初始化數字陣列全部改為從 0 開始
+            counts = new Array(themeData[theme].length).fill(0);
 
             // 渲染塔羅牌卡片
             renderCards();
@@ -294,7 +295,7 @@
             var list = themeData[currentTheme];
             var html = '';
 
-            // 根據卡片數量自動調整網格欄數（8張用4欄、10張用5欄）
+            // 根據卡片數量自動調整網格欄數
             if (list.length <= 8) {
                 container.style.gridTemplateColumns = 'repeat(4, 1fr)';
             } else {
@@ -304,7 +305,7 @@
             for (var i = 0; i < list.length; i++) {
                 var titleContent = list[i];
 
-                // 如果是「自由格」，渲染成可以自訂輸入的 input
+                // 「自由格」渲染成輸入框
                 if (titleContent === "自由格") {
                     titleContent = '<input type="text" class="custom-title-input" value="自由格" onclick="event.stopPropagation()">';
                 }
@@ -313,7 +314,7 @@
                     '<div class="title-box">' + titleContent + '</div>' +
                     '<div class="num-btn" id="btn-' + i + '" onclick="addCount(' + i + ')">' + counts[i] + '</div>' +
                     '<div class="status-box" id="status-' + i + '">' +
-                    (counts[i] === 3 ? '<span class="completed-mark">【好感度已達最高】</span>' : '') +
+                    (counts[i] === 3 ? '<span class="completed-mark">【等級已達最高】</span>' : '') +
                     '</div>' +
                     '</div>';
             }
@@ -327,8 +328,9 @@
         }
 
         function addCount(index) {
+            // 💡 0 到 3 循環邏輯：滿 3 歸 0，否則 +1
             if (counts[index] >= 3) {
-                counts[index] = 1;
+                counts[index] = 0;
             } else {
                 counts[index] = counts[index] + 1;
             }
@@ -336,8 +338,9 @@
         }
 
         function resetAllCounts() {
+            // 💡 全部重置為 0
             for (var i = 0; i < counts.length; i++) {
-                counts[i] = 1;
+                counts[i] = 0;
                 refreshView(i);
             }
         }
