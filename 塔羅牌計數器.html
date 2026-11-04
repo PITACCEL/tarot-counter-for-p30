@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>塔羅牌計數器 - 7張精選牌</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #0d0d0f; /* 深邃神祕黑背景 */
+            color: #f1f1f3;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            padding: 24px;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* 外層包覆容器 */
+        .page-wrapper {
+            width: 100%;
+            max-width: 1100px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* 三欄式網格容器 */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        /* 手機時自動降為單欄 */
+        @media (max-width: 768px) {
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* 單個卡片單元 */
+        .card-unit {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: #18181b;
+            border: 2px solid #3f3f46;
+            border-radius: 16px;
+            padding: 16px;
+        }
+
+        /* 頂部名稱標題框 */
+        .title-box {
+            font-size: 17px;
+            font-weight: 600;
+            color: #f43f5e;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #27272a;
+        }
+
+        /* 卡片小圖示樣式 */
+        .card-thumb {
+            width: 32px;
+            height: 48px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid #52525b;
+            background: #27272a;
+        }
+
+        /* 下方計數主區塊 */
+        .counter-section {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 16px;
+            padding-top: 4px;
+        }
+
+        /* 左側數字點擊按鈕 */
+        .num-btn {
+            width: 70px;
+            height: 90px;
+            border: 2px solid #f43f5e;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: bold;
+            color: #ffffff;
+            background: #27272a;
+            cursor: pointer;
+            user-select: none;
+            flex-shrink: 0;
+            transition: transform 0.1s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 0 10px rgba(244, 63, 94, 0.2);
+        }
+
+            /* 點擊時的彈跳微特效 */
+            .num-btn:active {
+                transform: scale(0.92);
+                background: #f43f5e;
+                color: #0d0d0f;
+                box-shadow: 0 0 15px rgba(244, 63, 94, 0.6);
+            }
+
+        /* 完成標籤樣式 */
+        .status-box {
+            display: flex;
+            align-items: center;
+        }
+
+        .completed-mark {
+            color: #f43f5e;
+            font-weight: bold;
+            font-size: 15px;
+            text-shadow: 0 0 8px rgba(244, 63, 94, 0.4);
+            line-height: 1.3;
+        }
+
+        /* 右下角重置按鈕區域 */
+        .reset-area {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+
+        .reset-btn {
+            background: #18181b;
+            border: 2px solid #f43f5e;
+            border-radius: 14px;
+            padding: 12px 24px;
+            text-align: center;
+            cursor: pointer;
+            user-select: none;
+            box-shadow: 0 4px 12px rgba(244, 63, 94, 0.15);
+            transition: background 0.2s ease;
+        }
+
+            .reset-btn:active {
+                background: #27272a;
+            }
+
+        .reset-title {
+            color: #f43f5e;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .reset-desc {
+            font-size: 12px;
+            color: #71717a;
+            margin-top: 2px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="page-wrapper">
+
+        <!-- 三欄卡片網格 -->
+        <div class="cards-grid">
+
+            <!-- 1. 愚者 -->
+            <div class="card-unit">
+                <div class="title-box">
+                    <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100&auto=format&fit=crop&q=60" class="card-thumb" alt="愚者" onerror="this.style.display='none'">
+                    <span>愚者(塔羅牌名稱)</span>
+                </div>
+                <div class="counter-section">
+                    <div class="num-btn" id="btn-0" onclick="addCount(0)">1</div>
+                    <div class="status-box" id="status-0"></div>
+                </div>
+            </div>
+
+            <!-- 2. 魔術師 -->
+            <div class="card-unit">
+                <div class="title-box">
+                    <img src="https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?w=100&auto=format&fit=crop&q=60" class="card-thumb" alt="魔術師" onerror="this.style.display='none'">
+                    <span>魔術師(塔羅牌名稱)</span>
+                </div>
+                <div class="counter-section">
+                    <div class="num-btn" id="btn-1" onclick="addCount(1)">1</div>
+                    <div class="status-box" id="status-1"></div>
+                </div>
+            </div>
+
+            <!-- 3. 女帝 -->
+            <div class="card-unit">
+                <div class="title-box">
+                    <img src="https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=100&auto=format&fit=crop&q=60" class="card-thumb" alt="女帝" onerror="this.style.display='none'">
+                    <span>女帝(塔羅牌名稱)</span>
+                </div>
+                <div class="counter-section">
+                    <div class="num-btn" id="btn-2" onclick="addCount(2)">1</div>
+                    <div class="status-box" id="status-2"></div>
+                </div>
+            </div>
+
+            <!-- 4. 信念 -->
+            <div class="card-unit">
+                <div class="title-box">
+                    <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=100&auto=format&fit=crop&q=60" class="card-thumb" alt="信念" onerror="this.style.display='none'">
+                    <span>信念(塔羅牌名稱)</span>
+                </div>
+                <div class="counter-section">
+                    <div class="num-btn" id="btn-3" onclick="addCount(3)">1</div>
+                    <div class="status-box" id="status-3"></div>
+                </div>
+            </div>
+
+            <!-- 5. 愛情 -->
+            <div class="card-unit">
+                <div class="title-box">
+                    <img src="https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=100&auto=format&fit=crop&q=60" class="card-thumb" alt="愛情" onerror="this.style.display='none'">
+                    <span>愛情(塔羅牌名稱)</span>
+                </div>
+                <div class="counter-section">
+                    <div class="num-btn" id="btn-4" onclick="addCount(4)">1</div>
+                    <div class="status-box" id="status-4"></div>
+                </div>
+            </div>
+
+            <!-- 6. 死神 -->
+            <div class="card-unit">
+                <div class="title-box">
+                    <img src="https://images.unsplash.com/photo-1509248961158-e54f6934749c?w=100&auto=format&fit=crop&q=60" class="card-thumb" alt="死神" onerror="this.style.display='none'">
+                    <span>死神(塔羅牌名稱)</span>
+                </div>
+                <div class="counter-section">
+                    <div class="num-btn" id="btn-5" onclick="addCount(5)">1</div>
+                    <div class="status-box" id="status-5"></div>
+                </div>
+            </div>
+
+            <!-- 7. 星 -->
+            <div class="card-unit">
+                <div class="title-box">
+                    <img src="https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?w=100&auto=format&fit=crop&q=60" class="card-thumb" alt="星" onerror="this.style.display='none'">
+                    <span>星(塔羅牌名稱)</span>
+                </div>
+                <div class="counter-section">
+                    <div class="num-btn" id="btn-6" onclick="addCount(6)">1</div>
+                    <div class="status-box" id="status-6"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 右下角重置按鈕區域 -->
+        <div class="reset-area">
+            <div class="reset-btn" onclick="resetAllCounts()">
+                <div class="reset-title">重置按鈕</div>
+                <div class="reset-desc">(會讓所有數字重新回到1)</div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        var counts = [1, 1, 1, 1, 1, 1, 1];
+
+        function addCount(index) {
+            // 如果當前已經是 3，再點一次會回到 1；否則正常 +1
+            if (counts[index] >= 3) {
+                counts[index] = 1;
+            } else {
+                counts[index] = counts[index] + 1;
+            }
+            refreshView(index);
+        }
+
+        function resetAllCounts() {
+            for (var i = 0; i < counts.length; i++) {
+                counts[i] = 1;
+                refreshView(i);
+            }
+        }
+
+        function refreshView(index) {
+            var btn = document.getElementById('btn-' + index);
+            var status = document.getElementById('status-' + index);
+
+            if (btn) {
+                btn.innerHTML = counts[index];
+            }
+
+            if (status) {
+                if (counts[index] === 3) {
+                    status.innerHTML = '<span class="completed-mark">【好感度已達最高】</span>';
+                } else {
+                    status.innerHTML = '';
+                }
+            }
+        }
+    </script>
+
+</body>
+</html>
