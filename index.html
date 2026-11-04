@@ -131,7 +131,7 @@
 
         /* 卡片標題與自訂輸入框 */
         .title-box {
-            font-size: 30px;
+            font-size: 40px;
             font-weight: bold;
             color: var(--text-color);
             text-align: center;
@@ -252,11 +252,11 @@
             <div class="footer-area">
                 <div class="action-btn" onclick="goHome()">
                     <div class="action-title">返回首頁</div>
-                    <div class="action-desc">(重新選擇風格)</div>
+                    <div class="action-desc">(重新選擇使用牌組)</div>
                 </div>
                 <div class="action-btn" onclick="resetAllCounts()">
                     <div class="action-title">重置按鈕</div>
-                    <div class="action-desc">(數字回到1)</div>
+                    <div class="action-desc">(數字全部重製)</div>
                 </div>
             </div>
         </div>
@@ -266,8 +266,8 @@
     <script>
         // 設定各風格對應的塔羅牌組
         var themeData = {
-            p3: ["愚者", "愛情", "女帝", "永劫", "女教皇", "正義","隱者","死神"],
-            p4: ["愚者", "魔術師", "正義", "女帝", "信念", "愛情", "死神", "星"],
+            p3: ["愚者", "愛情", "女帝", "永劫", "女教皇", "正義", "隱者", "死神", "命運", "自由格"],
+            p4: ["自由格", "自由格", "自由格", "自由格", "自由格", "自由格", "自由格", "自由格", "自由格", "自由格"],
             p5: ["愚者", "魔術師", "正義", "女帝", "信念", "愛情", "死神", "星", "隱者", "自由格"]
         };
 
@@ -352,7 +352,7 @@
 
             if (status) {
                 if (counts[index] === 3) {
-                    status.innerHTML = '<span class="completed-mark">【好感度已達最高】</span>';
+                    status.innerHTML = '<span class="completed-mark">【等級已達最高】</span>';
                 } else {
                     status.innerHTML = '';
                 }
