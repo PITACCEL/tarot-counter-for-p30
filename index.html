@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>塔羅牌計數器 - 統一背景與標題置中</title>
+    <title>塔羅牌計數器 - 10格自訂版</title>
     <style>
         * {
             box-sizing: border-box;
@@ -11,233 +11,321 @@
             padding: 0;
         }
 
+        /* 預設主題配色變數 */
+        :root {
+            --bg-color: #750000;
+            --card-bg: #18181b;
+            --border-color: #f43f5e;
+            --text-color: #f43f5e;
+            --btn-bg: #27272a;
+        }
+
+        /* P3 藍風主題 */
+        body.theme-p3 {
+            --bg-color: #0f172a;
+            --border-color: #38bdf8;
+            --text-color: #38bdf8;
+        }
+
+        /* P4 黃風主題 */
+        body.theme-p4 {
+            --bg-color: #1c1917;
+            --border-color: #facc15;
+            --text-color: #facc15;
+        }
+
+        /* P5 紅風主題 */
+        body.theme-p5 {
+            --bg-color: #750000;
+            --border-color: #f43f5e;
+            --text-color: #f43f5e;
+        }
+
         body {
-            background-color: #750000; /* 深邃紅背景 */
+            background-color: var(--bg-color);
             color: #f1f1f3;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            padding: 24px;
+            padding: 4px 8px;
             display: flex;
             justify-content: center;
+            align-items: stretch;
+            min-height: 100vh;
+            transition: background-color 0.3s ease;
         }
 
         .page-wrapper {
             width: 100%;
-            max-width: 1400px;
+            max-width: 1100px;
             display: flex;
             flex-direction: column;
-            gap: 24px;
+            gap: 4px;
         }
 
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        /* 1. 首頁風格選擇區 */
+        #home-view {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 90vh;
             gap: 20px;
         }
 
-        /* 統一卡片樣式：全卡片共用同一張背景圖與調淡遮罩 */
+        .home-title {
+            font-size: 26px;
+            font-weight: bold;
+            color: #ffffff;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+        }
+
+        .style-btn-group {
+            display: flex;
+            gap: 16px;
+        }
+
+        .style-btn {
+            background: #18181b;
+            border: 3px solid var(--border-color);
+            border-radius: 14px;
+            padding: 16px 28px;
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--text-color);
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            transition: transform 0.1s ease, background-color 0.2s ease;
+        }
+
+            .style-btn:active {
+                transform: scale(0.95);
+                background: var(--border-color);
+                color: #0d0d0f;
+            }
+
+        /* 2. 計數器主畫面 (預設隱藏) */
+        #app-view {
+            display: none;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        /* 5列網格排版 (預設5x2自動排滿10格) */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 6px;
+        }
+
+        /* 卡片單元 */
         .card-unit {
-            position: relative;
+            background: var(--card-bg);
+            border: 2px solid #3f3f46;
+            border-radius: 10px;
+            padding: 18px;
             display: flex;
             flex-direction: column;
+            align-items: center;
             justify-content: space-between;
-            gap: 16px;
-            border: 2px solid #52525b;
-            border-radius: 16px;
-            padding: 20px;
-            overflow: hidden;
-            /* 💡 統一背景圖片：此處可替換成你喜歡的單一底圖或卡背網址 */
-            background-image: linear-gradient(rgba(13, 13, 15, 0.8), rgba(13, 13, 15, 0.8)), url('https://assets.games.gg/Persona_30th_Anniversary_Leaks_a2fd035d35.png');
-            background-size: cover;
-            background-position: center;
-            min-height: 220px; /* 框體高度可依需求調整 */
+            gap: 3px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
         }
 
-        /* 頂部名稱標題框：已設定為水平置中 */
+        /* 卡片標題與自訂輸入框 */
         .title-box {
-            font-size: 24px;
+            font-size: 30px;
             font-weight: bold;
-            color: #f43f5e;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center; /* 💡 讓塔羅牌名稱居中 */
+            color: var(--text-color);
             text-align: center;
             width: 100%;
-            padding-bottom: 4px;
         }
 
-        .counter-section {
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            gap: 16px;
+        .custom-title-input {
+            width: 90%;
+            background: transparent;
+            border: none;
+            border-bottom: 1px dashed var(--border-color);
+            color: var(--text-color);
+            font-size: 30px;
+            font-weight: bold;
+            text-align: center;
+            outline: none;
+            padding: 1px 0;
         }
 
+        /* 巨型數字按鈕 */
         .num-btn {
-            width: 70px;
-            height: 90px;
-            border: 2px solid #f43f5e;
-            border-radius: 14px;
+            width: 100%;
+            height: 60px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 36px;
-            font-weight: bold;
-            color: #ffffff;
-            background: rgba(39, 39, 42, 0.85);
+            font-size: 42px;
+            font-weight: 900;
+            color: var(--text-color);
+            background: var(--btn-bg);
             cursor: pointer;
             user-select: none;
-            flex-shrink: 0;
-            transition: transform 0.1s ease, background-color 0.2s ease, box-shadow 0.2s ease;
-            box-shadow: 0 0 10px rgba(244, 63, 94, 0.3);
+            transition: transform 0.1s ease, background-color 0.2s ease, color 0.2s ease;
+            box-shadow: 0 0 6px rgba(0,0,0,0.3);
         }
 
-        .num-btn:active {
-            transform: scale(0.92);
-            background: #f43f5e;
-            color: #0d0d0f;
-            box-shadow: 0 0 15px rgba(244, 63, 94, 0.8);
-        }
+            .num-btn:active {
+                transform: scale(0.94);
+                background: var(--border-color);
+                color: #0d0d0f;
+            }
 
         .status-box {
+            min-height: 14px;
             display: flex;
             align-items: center;
+            justify-content: center;
         }
 
         .completed-mark {
-            color: #f43f5e;
+            color: var(--text-color);
             font-weight: bold;
-            font-size: 20px;
-            text-shadow: 0 0 8px rgba(0, 0, 0, 0.9), 0 0 12px rgba(244, 63, 94, 0.6);
-            line-height: 1.3;
+            font-size: 9px;
+            text-align: center;
+            white-space: nowrap;
         }
 
-        .reset-area {
+        /* 底部按鈕區 */
+        .footer-area {
             display: flex;
-            justify-content: flex-end;
-            margin-top: 10px;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2px;
         }
 
-        .reset-btn {
+        .action-btn {
             background: #18181b;
-            border: 2px solid #f43f5e;
-            border-radius: 14px;
-            padding: 12px 24px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 4px 10px;
             text-align: center;
             cursor: pointer;
             user-select: none;
-            box-shadow: 0 4px 12px rgba(244, 63, 94, 0.15);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
             transition: background 0.2s ease;
         }
 
-        .reset-btn:active {
-            background: #27272a;
-        }
+            .action-btn:active {
+                background: #27272a;
+            }
 
-        .reset-title {
-            color: #f43f5e;
+        .action-title {
+            color: var(--text-color);
             font-weight: bold;
-            font-size: 16px;
+            font-size: 11px;
         }
 
-        .reset-desc {
-            font-size: 12px;
-            color: #71717a;
-            margin-top: 2px;
+        .action-desc {
+            font-size: 8px;
+            color: #a1a1aa;
+            margin-top: 1px;
         }
     </style>
 </head>
-<body>
+<body class="theme-p5">
 
     <div class="page-wrapper">
 
-        <div class="cards-grid">
-
-            <!-- 1. 愚者 -->
-            <div class="card-unit">
-                <div class="title-box"><span>愚者</span></div>
-                <div class="counter-section">
-                    <div class="num-btn" id="btn-0" onclick="addCount(0)">1</div>
-                    <div class="status-box" id="status-0"></div>
-                </div>
+        <!-- 1. 首頁風格選擇 -->
+        <div id="home-view">
+            <div class="home-title">請選擇風格主題</div>
+            <div class="style-btn-group">
+                <button class="style-btn" onclick="selectTheme('p3')">P3 藍</button>
+                <button class="style-btn" onclick="selectTheme('p4')">P4 黃</button>
+                <button class="style-btn" onclick="selectTheme('p5')">P5 紅</button>
             </div>
-
-            <!-- 2. 魔術師 -->
-            <div class="card-unit">
-                <div class="title-box"><span>魔術師</span></div>
-                <div class="counter-section">
-                    <div class="num-btn" id="btn-1" onclick="addCount(1)">1</div>
-                    <div class="status-box" id="status-1"></div>
-                </div>
-            </div>
-
-            <!-- 3. 正義 -->
-            <div class="card-unit">
-                <div class="title-box"><span>正義</span></div>
-                <div class="counter-section">
-                    <div class="num-btn" id="btn-2" onclick="addCount(2)">1</div>
-                    <div class="status-box" id="status-2"></div>
-                </div>
-            </div>
-
-            <!-- 4. 女帝 -->
-            <div class="card-unit">
-                <div class="title-box"><span>女帝</span></div>
-                <div class="counter-section">
-                    <div class="num-btn" id="btn-3" onclick="addCount(3)">1</div>
-                    <div class="status-box" id="status-3"></div>
-                </div>
-            </div>
-
-            <!-- 5. 信念 -->
-            <div class="card-unit">
-                <div class="title-box"><span>信念</span></div>
-                <div class="counter-section">
-                    <div class="num-btn" id="btn-4" onclick="addCount(4)">1</div>
-                    <div class="status-box" id="status-4"></div>
-                </div>
-            </div>
-
-            <!-- 6. 愛情 -->
-            <div class="card-unit">
-                <div class="title-box"><span>愛情</span></div>
-                <div class="counter-section">
-                    <div class="num-btn" id="btn-5" onclick="addCount(5)">1</div>
-                    <div class="status-box" id="status-5"></div>
-                </div>
-            </div>
-
-            <!-- 7. 死神 -->
-            <div class="card-unit">
-                <div class="title-box"><span>死神</span></div>
-                <div class="counter-section">
-                    <div class="num-btn" id="btn-6" onclick="addCount(6)">1</div>
-                    <div class="status-box" id="status-6"></div>
-                </div>
-            </div>
-
-            <!-- 8. 星 -->
-            <div class="card-unit">
-                <div class="title-box"><span>星</span></div>
-                <div class="counter-section">
-                    <div class="num-btn" id="btn-7" onclick="addCount(7)">1</div>
-                    <div class="status-box" id="status-7"></div>
-                </div>
-            </div>
-
         </div>
 
-        <div class="reset-area">
-            <div class="reset-btn" onclick="resetAllCounts()">
-                <div class="reset-title">重置按鈕</div>
-                <div class="reset-desc">(會讓所有數字重新回到1)</div>
+        <!-- 2. 計數器主畫面 -->
+        <div id="app-view">
+            <div class="cards-grid" id="cards-container">
+                <!-- 卡片會由 JavaScript 動態生成 -->
+            </div>
+
+            <!-- 底部控制按鈕區 -->
+            <div class="footer-area">
+                <div class="action-btn" onclick="goHome()">
+                    <div class="action-title">返回首頁</div>
+                    <div class="action-desc">(重新選擇風格)</div>
+                </div>
+                <div class="action-btn" onclick="resetAllCounts()">
+                    <div class="action-title">重置按鈕</div>
+                    <div class="action-desc">(數字回到1)</div>
+                </div>
             </div>
         </div>
 
     </div>
 
     <script>
-        var counts = [1, 1, 1, 1, 1, 1, 1, 1];
+        // 設定各風格對應的塔羅牌組
+        var themeData = {
+            p3: ["愚者", "愛情", "女帝", "永劫", "女教皇", "正義","隱者","死神"],
+            p4: ["愚者", "魔術師", "正義", "女帝", "信念", "愛情", "死神", "星"],
+            p5: ["愚者", "魔術師", "正義", "女帝", "信念", "愛情", "死神", "星", "隱者", "自由格"]
+        };
+
+        var currentTheme = 'p5';
+        var counts = [];
+
+        function selectTheme(theme) {
+            currentTheme = theme;
+            document.body.className = 'theme-' + theme;
+
+            // 初始化數字陣列為 1
+            counts = new Array(themeData[theme].length).fill(1);
+
+            // 渲染塔羅牌卡片
+            renderCards();
+
+            // 畫面切換
+            document.getElementById('home-view').style.display = 'none';
+            document.getElementById('app-view').style.display = 'flex';
+        }
+
+        function renderCards() {
+            var container = document.getElementById('cards-container');
+            var list = themeData[currentTheme];
+            var html = '';
+
+            // 根據卡片數量自動調整網格欄數（8張用4欄、10張用5欄）
+            if (list.length <= 8) {
+                container.style.gridTemplateColumns = 'repeat(4, 1fr)';
+            } else {
+                container.style.gridTemplateColumns = 'repeat(5, 1fr)';
+            }
+
+            for (var i = 0; i < list.length; i++) {
+                var titleContent = list[i];
+
+                // 如果是「自由格」，渲染成可以自訂輸入的 input
+                if (titleContent === "自由格") {
+                    titleContent = '<input type="text" class="custom-title-input" value="自由格" onclick="event.stopPropagation()">';
+                }
+
+                html += '<div class="card-unit">' +
+                    '<div class="title-box">' + titleContent + '</div>' +
+                    '<div class="num-btn" id="btn-' + i + '" onclick="addCount(' + i + ')">' + counts[i] + '</div>' +
+                    '<div class="status-box" id="status-' + i + '">' +
+                    (counts[i] === 3 ? '<span class="completed-mark">【好感度已達最高】</span>' : '') +
+                    '</div>' +
+                    '</div>';
+            }
+
+            container.innerHTML = html;
+        }
+
+        function goHome() {
+            document.getElementById('app-view').style.display = 'none';
+            document.getElementById('home-view').style.display = 'flex';
+        }
 
         function addCount(index) {
             if (counts[index] >= 3) {
@@ -265,7 +353,7 @@
 
             if (status) {
                 if (counts[index] === 3) {
-                    status.innerHTML = '<span class="completed-mark">好感度已最高</span>';
+                    status.innerHTML = '<span class="completed-mark">【好感度已達最高】</span>';
                 } else {
                     status.innerHTML = '';
                 }
