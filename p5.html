@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Persona 5 塔羅牌計數器</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #750000; /* P5 經典暗紅背景 */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px 10px 40px 10px;
+            user-select: none;
+            overflow-x: hidden;
+        }
+
+        /* 5x2 網格容器 */
+        .tarot-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px 10px;
+            width: 100%;
+            max-width: 900px;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        /* 單個卡牌列容器 */
+        .p5-counter-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            width: 100%;
+        }
+
+        /* 無框純三角形按鈕 (-1 / +1) */
+        .btn-triangle {
+            width: 24px;
+            height: 40px;
+            background: transparent;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.1s ease;
+            flex-shrink: 0;
+            padding: 0;
+        }
+
+        .btn-triangle:active {
+            transform: scale(0.75);
+        }
+
+        .triangle-icon {
+            width: 18px;
+            height: 18px;
+            fill: #ffffff;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6));
+        }
+
+        /* 中間 P5 貼圖框體 (彈性等比例縮放) */
+        .p5-texture-box {
+            position: relative;
+            flex: 1;
+            min-width: 0;
+            height: 64px;
+            background-image: url('png-clipart-persona-5-dialog-box-dialogue-computer-icons-art-others-angle-rectangle.png');
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            background-position: center;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+            transition: filter 0.3s ease;
+        }
+
+        /* 內容定位與字體傾斜度 */
+        .p5-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            height: 100%;
+            padding-left: 160px;  
+            padding-right: 65px; 
+            transform: rotate(0.5deg) translateY(4px);
+        }
+
+   
+
+        /* 卡牌名稱 */
+        .card-name {
+            font-size: 30px;
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: 1px;
+            text-shadow: 2px 2px 0px #000;
+            white-space: nowrap;
+        }
+
+        /* 無框大數字 */
+        .card-num-plain {
+            font-size: 48px;
+            font-weight: 900;
+            color: #f43f5e; /* P5 經典桃紅 */
+            font-family: monospace, sans-serif;
+            text-shadow: 2px 2px 0px #000, 0 0 8px rgba(244, 63, 94, 0.6);
+            display: inline-block;
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+        }
+
+        /* 滿分 3 時的金黃高亮特效 */
+        .is-max .card-num-plain {
+            color: #facc15; 
+            text-shadow: 2px 2px 0px #000, 0 0 12px rgba(250, 204, 21, 0.9);
+        }
+
+        .is-max .p5-texture-box {
+            filter: drop-shadow(0 0 12px rgba(250, 204, 21, 0.8));
+        }
+
+        /* 數字彈跳動畫 */
+        .pop {
+            animation: popBounce 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popBounce {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.4); }
+            100% { transform: scale(1); }
+        }
+
+        /* 底部操作列：將重置與返回首頁並排置中 */
+        .footer-actions {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .btn-reset {
+            background-color: #e11d48;
+            color: #ffffff;
+            border: 2px solid #ffffff;
+            padding: 8px 20px;
+            font-size: 15px;
+            font-weight: 900;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            letter-spacing: 1px;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+
+        .btn-reset:active {
+            transform: scale(0.95);
+            background-color: #be123c;
+        }
+
+        .btn-back {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 900;
+            font-size: 15px;
+            padding: 8px 20px;
+            border: 2px solid #ffffff;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.5);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            letter-spacing: 1px;
+            display: inline-block;
+            text-align: center;
+            transition: transform 0.1s ease, background-color 0.2s ease;
+        }
+
+        .btn-back:active {
+            transform: scale(0.95);
+            background: rgba(225, 29, 72, 0.8);
+        }
+
+        /* 📱 手機【橫向狀態 (Landscape)】專門最佳化 */
+        @media (orientation: landscape) and (max-height: 600px) {
+            body {
+                padding: 6px 10px 20px 10px;
+            }
+
+            .tarot-grid {
+                gap: 4px 16px;
+                margin-bottom: 8px;
+            }
+
+            .p5-texture-box {
+                height: 52px;
+            }
+
+            .p5-content {
+                padding-left: 35%;
+                padding-right: 14%;
+            }
+
+            .card-name {
+                font-size: 15px;
+            }
+
+            .card-num-plain {
+                font-size: 26px;
+            }
+
+            .btn-reset, .btn-back {
+                padding: 5px 16px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 5x2 網格容器 -->
+    <div class="tarot-grid" id="tarotGrid"></div>
+
+    <!-- 底部操作區域：重置按鈕與返回首頁並排同一行 -->
+    <div class="footer-actions">
+        <button class="btn-reset" onclick="resetAll()">全部重置 RESET</button>
+        <a href="index.html" class="btn-back">返回首頁 HOME</a>
+    </div>
+
+    <script>
+        const tarotCards = [
+            { id: 0, name: "愚者" },
+            { id: 1, name: "魔術師" },
+            { id: 2, name: "正義" },
+            { id: 3, name: "女帝" },
+            { id: 4, name: "信念" },
+            { id: 5, name: "戀人" },
+            { id: 6, name: "死神" },
+            { id: 7, name: "星" },
+            { id: 8, name: "戰車" },
+            { id: 9, name: "隱者" }
+        ];
+
+        let counts = Array(tarotCards.length).fill(0);
+        const gridContainer = document.getElementById('tarotGrid');
+
+        function renderGrid() {
+            gridContainer.innerHTML = '';
+            tarotCards.forEach((card, index) => {
+                const count = counts[index];
+                const isMax = count === 3 ? 'is-max' : '';
+
+                const wrapper = document.createElement('div');
+                wrapper.className = `p5-counter-wrapper ${isMax}`;
+                wrapper.id = `wrapper-${index}`;
+
+                wrapper.innerHTML = `
+                    <button class="btn-triangle" onclick="updateCount(${index}, -1)">
+                        <svg class="triangle-icon" viewBox="0 0 24 24">
+                            <polygon points="17,4 6,12 17,20"/>
+                        </svg>
+                    </button>
+
+                    <div class="p5-texture-box" onclick="updateCount(${index}, 1)">
+                        <div class="p5-content">
+                            <span class="card-name">${card.name}</span>
+                            <span class="card-num-plain" id="num-${index}">${count}</span>
+                        </div>
+                    </div>
+
+                    <button class="btn-triangle" onclick="updateCount(${index}, 1)">
+                        <svg class="triangle-icon" viewBox="0 0 24 24">
+                            <polygon points="7,4 18,12 7,20"/>
+                        </svg>
+                    </button>
+                `;
+                gridContainer.appendChild(wrapper);
+            });
+        }
+
+        function updateCount(index, delta) {
+            counts[index] += delta;
+            if (counts[index] > 3) counts[index] = 0;
+            if (counts[index] < 0) counts[index] = 3;
+
+            const numElem = document.getElementById(`num-${index}`);
+            const wrapperElem = document.getElementById(`wrapper-${index}`);
+
+            numElem.innerText = counts[index];
+
+            if (counts[index] === 3) {
+                wrapperElem.classList.add('is-max');
+            } else {
+                wrapperElem.classList.remove('is-max');
+            }
+
+            numElem.classList.remove('pop');
+            void numElem.offsetWidth;
+            numElem.classList.add('pop');
+        }
+
+        function resetAll() {
+            counts.fill(0);
+            renderGrid();
+        }
+
+        renderGrid();
+    </script>
+
+</body>
+</html>
