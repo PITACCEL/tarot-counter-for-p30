@@ -12,7 +12,8 @@
         }
 
         body {
-            background-color: #750000; /* P5 經典暗紅背景 */
+            background-color: #1a1600; /* P4 暗黃深色背景 */
+            background-image: radial-gradient(circle at 50% 30%, #4a3d00 0%, #1a1600 70%);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             display: flex;
             flex-direction: column;
@@ -28,7 +29,7 @@
         .tarot-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 8px 10px;
+            gap: 14px 16px;
             width: 100%;
             max-width: 900px;
             justify-content: center;
@@ -36,11 +37,11 @@
         }
 
         /* 單個卡牌列容器 */
-        .p5-counter-wrapper {
+        .p4-counter-wrapper {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 4px;
+            gap: 6px;
             width: 100%;
         }
 
@@ -66,70 +67,93 @@
         .triangle-icon {
             width: 18px;
             height: 18px;
-            fill: #ffffff;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6));
+            fill: #ffe600; /* P4 經典亮黃色箭頭 */
+            filter: drop-shadow(0 0 6px rgba(255, 230, 0, 0.8));
         }
 
-        /* 中間 P5 貼圖框體 (彈性等比例縮放) */
-        .p5-texture-box {
+        /* P4 對話框本體：維持不規則斜角造型 */
+        .p4-texture-box {
             position: relative;
             flex: 1;
             min-width: 0;
-            height: 64px;
-            background-image: url('png-clipart-persona-5-dialog-box-dialogue-computer-icons-art-others-angle-rectangle.png');
-            background-size: 100% 100%;
-            background-repeat: no-repeat;
-            background-position: center;
+            height: 68px;
+            background: #2b2400;
             cursor: pointer;
             display: flex;
             align-items: center;
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
-            transition: filter 0.3s ease;
+            clip-path: polygon(0% 12%, 100% 0%, 98% 80%, 100% 100%, 75% 88%, 0% 85%);
+            border: 2px solid #ffe600;
+            box-shadow: 0 4px 15px rgba(255, 230, 0, 0.3);
+            transition: transform 0.15s ease, filter 0.3s ease, border-color 0.3s ease;
         }
 
-        /* 內容定位與字體傾斜度 */
-        .p5-content {
+        /* 內部黃黑漸層背景 */
+        .p4-texture-box::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, #4d4000 0%, #1f1a00 100%);
+            z-index: 1;
+        }
+
+        /* 左上角仿造 P4 風格的黃色小標籤裝飾 */
+        .p4-texture-box::after {
+            content: '';
+            position: absolute;
+            left: -4px;
+            top: -6px;
+            width: 28px;
+            height: 22px;
+            background: #ffe600;
+            clip-path: polygon(0% 0%, 100% 30%, 80% 100%, 0% 80%);
+            z-index: 3;
+            box-shadow: 0 0 6px rgba(255,230,0,0.8);
+        }
+
+        /* 內容定位與字體傾斜微調 */
+        .p4-content {
+            position: relative;
+            z-index: 4;
             display: flex;
             align-items: center;
             justify-content: space-between;
             width: 100%;
             height: 100%;
-            padding-left: 160px;  
-            padding-right: 65px; 
-            transform: rotate(0.5deg) translateY(4px);
+            padding-left: 28%;  
+            padding-right: 14%; 
+            transform: translateY(2px);
         }
-
-   
 
         /* 卡牌名稱 */
         .card-name {
-            font-size: 30px;
+            font-size: 16px;
             font-weight: 900;
             color: #ffffff;
             letter-spacing: 1px;
-            text-shadow: 2px 2px 0px #000;
+            text-shadow: 1px 1px 3px #000, 0 0 8px rgba(255, 230, 0, 0.5);
             white-space: nowrap;
         }
 
-        /* 無框大數字 */
+        /* 無框大數字 (預設為 P4 黃色) */
         .card-num-plain {
-            font-size: 48px;
+            font-size: 28px;
             font-weight: 900;
-            color: #f43f5e; /* P5 經典桃紅 */
+            color: #ffe600;
             font-family: monospace, sans-serif;
-            text-shadow: 2px 2px 0px #000, 0 0 8px rgba(244, 63, 94, 0.6);
+            text-shadow: 2px 2px 0px #000, 0 0 10px rgba(255, 230, 0, 0.8);
             display: inline-block;
             transition: color 0.3s ease, text-shadow 0.3s ease;
         }
 
-        /* 滿分 3 時的金黃高亮特效 */
+        /* 滿分 3 時改為【純白色】高亮發光特效 */
         .is-max .card-num-plain {
-            color: #facc15; 
-            text-shadow: 2px 2px 0px #000, 0 0 12px rgba(250, 204, 21, 0.9);
+            color: #ffffff; 
+            text-shadow: 2px 2px 0px #000, 0 0 14px rgba(255, 255, 255, 0.9), 0 0 25px rgba(255, 230, 0, 0.7);
         }
 
-        .is-max .p5-texture-box {
-            filter: drop-shadow(0 0 12px rgba(250, 204, 21, 0.8));
+        .is-max .p4-texture-box {
+            filter: drop-shadow(0 0 14px rgba(255, 255, 255, 0.6));
+            border-color: #ffffff;
         }
 
         /* 數字彈跳動畫 */
@@ -154,22 +178,22 @@
         }
 
         .btn-reset {
-            background-color: #e11d48;
-            color: #ffffff;
-            border: 2px solid #ffffff;
+            background: linear-gradient(135deg, #b39b00, #e6c200);
+            color: #000000;
+            border: 2px solid #ffe600;
             padding: 8px 20px;
             font-size: 15px;
             font-weight: 900;
             border-radius: 8px;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            box-shadow: 0 4px 12px rgba(255, 230, 0, 0.3);
             letter-spacing: 1px;
-            transition: background-color 0.2s ease, transform 0.1s ease;
+            transition: background 0.2s ease, transform 0.1s ease;
         }
 
         .btn-reset:active {
             transform: scale(0.95);
-            background-color: #be123c;
+            background: #806e00;
         }
 
         .btn-back {
@@ -178,10 +202,10 @@
             font-weight: 900;
             font-size: 15px;
             padding: 8px 20px;
-            border: 2px solid #ffffff;
+            border: 2px solid #ffe600;
             border-radius: 8px;
-            background: rgba(0, 0, 0, 0.5);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            background: rgba(43, 36, 0, 0.8);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
             letter-spacing: 1px;
             display: inline-block;
             text-align: center;
@@ -190,7 +214,7 @@
 
         .btn-back:active {
             transform: scale(0.95);
-            background: rgba(225, 29, 72, 0.8);
+            background: rgba(255, 230, 0, 0.3);
         }
 
         /* 📱 手機【橫向狀態 (Landscape)】專門最佳化 */
@@ -204,12 +228,12 @@
                 margin-bottom: 8px;
             }
 
-            .p5-texture-box {
+            .p4-texture-box {
                 height: 52px;
             }
 
-            .p5-content {
-                padding-left: 35%;
+            .p4-content {
+                padding-left: 26%;
                 padding-right: 14%;
             }
 
@@ -243,13 +267,13 @@
         const tarotCards = [
             { id: 0, name: "愚者" },
             { id: 1, name: "魔術師" },
-            { id: 2, name: "正義" },
+            { id: 2, name: "女祭司" },
             { id: 3, name: "女帝" },
-            { id: 4, name: "信念" },
-            { id: 5, name: "戀人" },
-            { id: 6, name: "死神" },
-            { id: 7, name: "星" },
-            { id: 8, name: "戰車" },
+            { id: 4, name: "皇帝" },
+            { id: 5, name: "教皇" },
+            { id: 6, name: "戀人" },
+            { id: 7, name: "戰車" },
+            { id: 8, name: "力量" },
             { id: 9, name: "隱者" }
         ];
 
@@ -263,7 +287,7 @@
                 const isMax = count === 3 ? 'is-max' : '';
 
                 const wrapper = document.createElement('div');
-                wrapper.className = `p5-counter-wrapper ${isMax}`;
+                wrapper.className = `p4-counter-wrapper ${isMax}`;
                 wrapper.id = `wrapper-${index}`;
 
                 wrapper.innerHTML = `
@@ -273,8 +297,8 @@
                         </svg>
                     </button>
 
-                    <div class="p5-texture-box" onclick="updateCount(${index}, 1)">
-                        <div class="p5-content">
+                    <div class="p4-texture-box" onclick="updateCount(${index}, 1)">
+                        <div class="p4-content">
                             <span class="card-name">${card.name}</span>
                             <span class="card-num-plain" id="num-${index}">${count}</span>
                         </div>
